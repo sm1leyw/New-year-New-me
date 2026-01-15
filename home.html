@@ -1,11 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>แดชบอร์ด - AEC HUB</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    
+<body onload="loadPage()">
+    <div class="container">
+        <div class="logo">
+            <span>A</span><span>E</span><span>C</span> HUB
+        </div>
+
+        <h1>ยินดีต้อนรับ</h1>
+
+        <div class="user-info" style="background:#f0f9ff; padding:1.8rem; border-radius:16px; margin:2rem 0; text-align:left;">
+            <h2 style="margin-bottom:1.2rem; color:#1e40af;">ข้อมูลนักศึกษา</h2>
+            <p style="font-size:1.1rem; margin:0.8rem 0;">
+                <strong>ชื่อ-นามสกุล:</strong> <span id="fullName">-</span>
+            </p>
+            <p style="font-size:1.1rem; margin:0.8rem 0;">
+                <strong>รหัสนักศึกษา:</strong> <span id="studentId">-</span>
+            </p>
+            <p style="font-size:1.1rem; margin:0.8rem 0;">
+                <strong>สาขา:</strong> <span id="major">-</span>
+            </p>
+            <p style="font-size:1.1rem; margin:0.8rem 0; color:#64748b;">
+                <strong>อีเมล:</strong> <span id="email">-</span>
+            </p>
+        </div>
+
+        <p style="font-size:1.2rem; color:#334155; margin:2rem 0; text-align:center;">
+            ยินดีต้อนรับสู่ระบบเช็คอินนักศึกษา<br>
+            วิทยาลัยเทคโนโลยีพณิชยการอยุธยา
+        </p>
+
+        <!-- ปุ่มถัดไป (แทนออกจากระบบ) -->
+        <button class="btn" onclick="goNext()">
+            ถัดไป
+        </button>
+    </div>
+
+    <script>
+        function loadPage() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                location.href = 'login.html';
+                return;
+            }
+            document.getElementById('fullName').innerText = currentUser.fullName || '-';
+            document.getElementById('studentId').innerText = currentUser.studentId || '-';
+            document.getElementById('major').innerText = currentUser.major || '-';
+            document.getElementById('email').innerText = currentUser.email || '-';
+        }
+
+        function goNext() {
+            location.href = 'next.html';  // ไปหน้าถัดไปที่เราจะสร้าง
+        }
+    </script>
 </body>
 </html>
