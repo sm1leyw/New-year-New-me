@@ -16,6 +16,24 @@
         overflow: hidden;
     }
 
+    .logo-login {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto -20px;        /* จัดกึ่งกลาง + เว้นด้านล่าง */
+        border-radius: 50%;         /* ทำเป็นวงกลม */
+        /* background-color: #f5f5f5;  พื้นหลังอ่อน */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+    }
+
+    .logo-login img {
+        width: 70%;
+        height: auto;
+        object-fit: contain;
+    }
+
     /* วิดีโอพื้นหลัง (ถ้ามีไฟล์) */
     #bg-video {
         position: fixed;
@@ -69,7 +87,7 @@
         display: block;
         width: 60px;
         height: 4px;
-        background: #3365e2;
+        background: #3892e0;
         margin: 8px auto 0;
         border-radius: 2px;
     }
@@ -138,7 +156,7 @@
         width: 100%;
         padding: 12px;
         margin-top: 10px;
-        background: #3365e2; /* ปุ่มสีขาว */
+        background: #3892e0; /* ปุ่มสีขาว */
         color: white; /* ตัวหนังสือเข้ม */
         border: none;
         border-radius: 30px;
@@ -165,7 +183,7 @@
     .toggle-btn {
         background: none;
         border: none;
-        color: #3365e2;
+        color: #3892e0;
         font-weight: 600;
         cursor: pointer; 
         text-decoration: none;
