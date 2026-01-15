@@ -67,16 +67,11 @@
 
           <div class="form-group">
             <label for="reg-uid"> รหัสนักศึกษา</label>
-            <input type="text" id="reg-uid" placeholder="ตั้งชื่อผู้ใช้ใหม่" required>
-          </div>
-  
-          <div class="form-group">
-            <label for="reg-email"> Email</label>
-            <input type="email" id="reg-email" placeholder="ตั้งชื่อผู้ใช้ใหม่" required>
+            <input type="text" id="reg-uid" placeholder="กรอกรหัสนักศึกษา" required>
           </div>
 
           <div class="form-group">
-            <label for="reg-uid">ระดับการศึกษา</label>
+            <label for="reg-floor">ระดับการศึกษา</label>
                 <select id="level" required>
                     <option value="" disabled selected>เลือกระดับชั้น</option>
                     <option value="ปวช.">ประกาศนียบัตรวิชาชีพ (ปวช.)</option>
@@ -85,7 +80,7 @@
           </div>
 
           <div class="form-group">
-            <label for="reg-uid">ระดับการศึกษา</label>
+            <label for="reg-major">สาขาวิชา</label>
                 <select id="major" required>
                     <option value="" disabled selected>เลือกสาขา</option>
                     <option value="คอมพิวเตอร์สารสนเทศ">คอมพิวเตอร์เทคโนโลยีสารสนเทศ</option>
@@ -102,14 +97,6 @@
                 <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('reg-password', this)"></i>
             </div>
           </div>
-
-          <!-- <div class="form-group">
-            <label for="reg-confirm-password">ยืนยันรหัสผ่าน</label>
-            <div class="password-container">
-                <input type="password" id="reg-confirm-password" placeholder="ยืนยันรหัสผ่านอีกครั้ง" required>
-                <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('reg-confirm-password', this)"></i>
-            </div>
-          </div> -->
 
           <button type="submit" style="background-color: #3892e0;">ยืนยันการสมัคร</button>
         </form>

@@ -16,31 +16,40 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
 
     const username = document.getElementById('reg-username').value.trim();
     const password = document.getElementById('reg-password').value;
-    const confirmPassword = document.getElementById('reg-confirm-password').value;
+    const major = document.getElementById('major').value;
+    const uid = document.getElementById('uid').value.trim();
+    const level = document.getElementById('level').value;
 
-    // 1. ตรวจสอบรหัสผ่านว่าตรงกันไหม
-    if (password !== confirmPassword) {
-        alert("รหัสผ่านไม่ตรงกัน กรุณาลองใหม่");
+    // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
+
+    if (!username || !password || !major || !uid || !level) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
         return;
     }
 
-    // 2. ดึงข้อมูล User เก่าจาก localStorage (ถ้าไม่มีให้เป็น Array ว่าง [])
+
+
+
+    // . ดึงข้อมูล User เก่าจาก localStorage (ถ้าไม่มีให้เป็น Array ว่าง [])
     let users = JSON.parse(localStorage.getItem('users')) || [];
 
-    // 3. ตรวจสอบว่ามีชื่อผู้ใช้นี้หรือยัง
+    // . ตรวจสอบว่ามีชื่อผู้ใช้นี้หรือยัง
     const userExists = users.some(user => user.username === username);
     if (userExists) {
         alert("ชื่อผู้ใช้นี้มีอยู่ในระบบแล้ว กรุณาใช้ชื่ออื่น");
         return;
     }
 
-    // 4. สร้าง Object ข้อมูลลูกค้าใหม่
+    // . สร้าง Object ข้อมูลลูกค้าใหม่
     const newUser = {
         username: username,
         password: password // หมายเหตุ: ในงานจริงควรเข้ารหัส (Hash) รหัสผ่านก่อนเก็บ
+        , major: major
+        , uid: uid
+        , level: level
     };
 
-    // 5. เพิ่มลง Array และบันทึกกลับเข้า localStorage
+    // . เพิ่มลง Array และบันทึกกลับเข้า localStorage
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
@@ -92,3 +101,4 @@ function togglePassword(inputId, icon) {
         icon.classList.add("fa-eye");
     }
 }
+

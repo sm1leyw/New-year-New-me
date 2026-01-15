@@ -4,16 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เมนูระบบ - AEC HUB</title>
+    <title>เมนูระบบ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* --- CSS หลัก --- */
         body {
             background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #c7d2fe);
             background-size: 400% 400%;
             animation: gradientMove 15s ease infinite;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Sarabun', sans-serif;
+            font-family: 'Sarabun', sans-serif; /* เปลี่ยนฟอนต์เป็น Sarabun */
             color: #1e293b;
         }
 
@@ -30,35 +34,90 @@
             text-align: center;
         }
 
-        /* Banner พร้อมรูปขยับได้ */
+        /* --- ส่วน Banner วิดีโอ --- */
         .banner {
-            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            /* ลบ background สีเดิมออก */
+            /* background: linear-gradient(135deg, #1d4ed8, #3b82f6); */
             color: white;
-            padding: 3.5rem 1.5rem;
+            padding: 4rem 1.5rem; /* เพิ่ม padding แนวตั้งนิดหน่อยเพื่อให้เห็นวิดีโอมากขึ้น */
             border-radius: 24px;
             margin-bottom: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
             position: relative;
+            overflow: hidden;
+            /* เพิ่มความสูงขั้นต่ำเพื่อให้แน่ใจว่าวิดีโอแสดงผลสวยงาม */
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* คอนเทนเนอร์สำหรับวิดีโอ */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* อยู่ชั้นหลังสุด */
             overflow: hidden;
         }
 
+        /* ตัววิดีโอ */
+        #banner-video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* จัดให้อยู่กึ่งกลางเสมอ */
+            object-fit: cover; /* ขยายให้เต็มพื้นที่โดยไม่เสียสัดส่วน */
+        }
+
+        /* เลเยอร์สีทับวิดีโอเพื่อให้ตัวหนังสืออ่านง่าย */
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* ใช้สีน้ำเงินโปร่งแสงทับเพื่อให้เข้ากับธีมเดิมและทำให้อ่านง่ายขึ้น */
+            background: rgba(20, 60, 180, 0.75);
+            z-index: 1; /* อยู่เหนือวิดีโอ แต่อยู่ใต้ข้อความ */
+            backdrop-filter: blur(2px); /* เพิ่มเบลอนิดหน่อยให้ดูนุ่มนวล (ทางเลือก) */
+        }
+
+        /* คอนเทนเนอร์สำหรับข้อความภายใน Banner */
+        .banner-content {
+            position: relative;
+            z-index: 3; /* อยู่ชั้นบนสุด */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* เพิ่มเงาให้ตัวหนังสืออ่านง่ายขึ้นบนวิดีโอ */
+        }
+
+        /* --- Elements ตกแต่งเดิม (Bubble/Icon) --- */
+        /* ปรับ z-index ให้อยู่ระหว่าง overlay กับข้อความ */
         .floating-icon {
             position: absolute;
             font-size: 5rem;
-            color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.3); /* เพิ่มความชัดขึ้นนิดหน่อย */
             bottom: -10px;
             right: 20px;
             animation: float 4s ease-in-out infinite;
-            z-index: 1;
+            z-index: 2;
         }
 
         .bubble {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             animation: moveUp 10s linear infinite;
+            z-index: 2;
         }
 
+        /* --- Animations เดิม --- */
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(10deg); }
@@ -70,52 +129,28 @@
             100% { transform: translateY(-100%) scale(1.5); opacity: 0; }
         }
 
+        /* --- Typography ใน Banner --- */
         .banner h1 {
-            font-size: 3rem;
+            font-size: 3.5rem; /* ใหญ่ขึ้นเล็กน้อย */
             margin: 0;
             letter-spacing: 2px;
-            position: relative;
-            z-index: 2;
+            font-weight: 700;
         }
 
         .banner p {
             font-size: 1.3rem;
             margin: 0.5rem 0;
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
+            opacity: 1;
+            font-weight: 400;
         }
 
-        /* แก้ไขส่วนการ์ดตรงกลาง: ตารางเรียนวันนี้ */
-        .user-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 1.8rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-top: 6px solid #3b82f6; /* เพิ่มแถบสีฟ้าด้านบน */
-            text-align: center;
-        }
-
-        .status-badge {
-            background: #dcfce7;
-            color: #166534;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* ตารางเมนู (Grid) */
+        /* --- ส่วนเมนูและปุ่ม (คงเดิม) --- */
         .menu-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 1.5rem;
             justify-content: center;
-            margin: 2rem 0;
+            margin: 3rem 0;
         }
 
         .menu-item {
@@ -157,6 +192,8 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
         }
 
         .back-btn:hover {
@@ -169,31 +206,23 @@
 <body>
     <div class="container">
         <div class="banner">
+            <div class="video-container">
+                <video autoplay muted loop playsinline id="banner-video">
+                    <source src="jordan-footage.mp4" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
+            </div>
+
+            <div class="video-overlay"></div>
+
             <i class="fas fa-graduation-cap floating-icon"></i>
-            <div class="bubble" style="width:40px; height:40px; left:10%; animation-delay:0s;"></div>
-            <div class="bubble" style="width:20px; height:20px; left:20%; animation-delay:2s;"></div>
-            <div class="bubble" style="width:60px; height:60px; left:70%; animation-delay:4s;"></div>
+            <div class="bubble" style="width: 50px; height: 50px; left: 10%; animation-duration: 8s;"></div>
+            <div class="bubble" style="width: 30px; height: 30px; left: 80%; animation-duration: 12s; animation-delay: 2s;"></div>
 
-            <h1>AEC HUB</h1>
-            <p>ระบบเช็คอินนักศึกษา</p>
-            <p style="font-size: 1.1rem; opacity: 0.8;">วิทยาลัยเทคโนโลยีพณิชยการอยุธยา</p>
-        </div>
-
-        <div class="user-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <span style="color: #3b82f6; font-weight: bold;"><i class="fas fa-calendar-day"></i> ตารางเรียนวันนี้</span>
-                <span id="currentTime" style="color: #64748b; font-size: 0.85rem;"></span>
-            </div>
-            
-            <h2 style="color:#1e40af; margin: 0.5rem 0; font-size: 1.5rem;">การพัฒนาโมบายแอปพลิเคชัน</h2>
-            
-            <div style="margin: 1rem 0; color: #475569;">
-                <span style="margin: 0 10px;"><i class="fas fa-door-open" style="color: #3b82f6;"></i> ห้อง 402</span>
-                <span style="margin: 0 10px;"><i class="fas fa-clock" style="color: #3b82f6;"></i> 08:30 - 12:30</span>
-            </div>
-
-            <div class="status-badge">
-                <i class="fas fa-check-circle"></i> เช็คอินเรียบร้อยแล้ว
+            <div class="banner-content">
+                <h1>ATCC</h1>
+                <p>ระบบเช็คอินนักศึกษา</p>
+                <p style="font-size: 1.1rem;">วิทยาลัยเทคโนโลยีพณิชยการอยุธยา</p>
             </div>
         </div>
 
@@ -204,7 +233,7 @@
             </a>
             <a href="subjects.html" class="menu-item">
                 <i class="fas fa-book"></i>
-                รายวิชา
+                ตารางเรียน
             </a>
             <a href="leave.html" class="menu-item">
                 <i class="fas fa-file-medical"></i>
@@ -216,26 +245,17 @@
             </a>
             <a href="student-list.html" class="menu-item">
                 <i class="fas fa-users"></i>
-                นักศึกษา
+                ข้อมูลนักศึกษา
             </a>
         </div>
 
-        <button class="back-btn" onclick="location.href='main.html'">
+        <button class="back-btn" onclick="location.href='home.html'">
             กลับหน้าแรก
         </button>
     </div>
 
     <script>
-        // ฟังก์ชันแสดงเวลาปัจจุบัน
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('currentTime').innerText = 'เวลา: ' + timeStr + ' น.';
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // หมายเหตุ: ข้อมูล user เดิมยังคงดึงได้ปกติหากต้องการใช้ในส่วนอื่น
+        // (Script ส่วนนี้อาจไม่ได้ใช้ในหน้านี้ แต่คงไว้ตามเดิม)
         const user = JSON.parse(localStorage.getItem('currentUser'));
     </script>
 </body>
