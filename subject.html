@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางเรียน - ATCC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- CSS เดิม --- */
+        * { box-sizing: border-box; }
+        body {
+            background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #c7d2fe);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Sarabun', sans-serif;
+            color: #1e293b;
+            padding-bottom: 2rem;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* --- Header ปรับปรุงใหม่ --- */
+        .page-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap; /* รองรับมือถือ */
+            gap: 10px;
+        }
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e40af;
+        }
+        
+        /* Dropdown เลือกปีการศึกษา */
+        .semester-select-wrapper {
+            position: relative;
+        }
+        .semester-select {
+            appearance: none;
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            color: #1e40af;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 8px 35px 8px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .semester-select:hover, .semester-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        /* Icon ลูกศรลงใน select */
+        .semester-select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3b82f6;
+            pointer-events: none;
+        }
+
+        /* --- Day Tabs --- */
+        .day-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding-bottom: 10px;
+            margin-bottom: 1rem;
+            scrollbar-width: none;
+        }
+        .day-tabs::-webkit-scrollbar { display: none; }
+
+        .day-btn {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .day-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Class Card --- */
+        .class-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 300px; /* กันหน้าจอกระตุกตอนโหลด */
+        }
+        .class-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #3b82f6;
+            animation: fadeIn 0.4s ease-out; /* Animation ตอนเปลี่ยนเทอม */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .class-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .class-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .subject-code {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .subject-time {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .subject-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+        .subject-info {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        .subject-info i { color: #3b82f6; width: 20px; text-align: center; }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-header-section { border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
+        .detail-row { display: flex; margin-bottom: 1rem; align-items: center; }
+        .detail-icon {
+            width: 40px; height: 40px; background: #eff6ff; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            color: #2563eb; margin-right: 15px; font-size: 1.2rem;
+        }
+        .detail-text h4 { margin: 0; font-size: 0.85rem; color: #64748b; }
+        .detail-text p { margin: 0; font-size: 1rem; font-weight: 600; color: #1e293b; }
+        .classmates-section h3 { font-size: 1.1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .student-count { background: #dcfce7; color: #166534; font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; }
+        .classmate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 15px; margin-top: 1rem; }
+        .student-item { text-align: center; }
+        .student-avatar {
+            width: 50px; height: 50px; background: #e2e8f0; border-radius: 50%; margin: 0 auto 5px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; color: #64748b; border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .student-name { font-size: 0.75rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .back-btn {
+            background: #ef4444; color: white; padding: 1rem; width: 100%;
+            border-radius: 12px; border: none; font-size: 1.1rem; margin-top: 2rem;
+            cursor: pointer; font-family: 'Sarabun', sans-serif; font-weight: 600;
+        }
+        
+        /* กรณีไม่มีข้อมูลเรียน */
+        .no-class {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="header-title">
+                <h1>ตารางเรียน</h1>
+                <p style="color: #64748b; font-size: 0.9rem;">ข้อมูลรายวิชาของคุณ</p>
+            </div>
+            
+            <div class="semester-select-wrapper">
+                <select id="semester-select" class="semester-select" onchange="changeSemester()">
+                    <option value="2/2567" selected>ภาคเรียนที่ 2/2567</option>
+                    <option value="1/2567">ภาคเรียนที่ 1/2567</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="day-tabs">
+            <button class="day-btn active" onclick="selectDay('Mon')">จันทร์</button>
+            <button class="day-btn" onclick="selectDay('Tue')">อังคาร</button>
+            <button class="day-btn" onclick="selectDay('Wed')">พุธ</button>
+            <button class="day-btn" onclick="selectDay('Thu')">พฤหัสบดี</button>
+            <button class="day-btn" onclick="selectDay('Fri')">ศุกร์</button>
+        </div>
+
+        <div id="schedule-container" class="class-list">
+            </div>
+
+        <button class="back-btn" onclick="location.href='next.html'">กลับหน้าหลัก</button>
+    </div>
+
+    <div id="class-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            
+            <div class="modal-header-section">
+                <span id="m-code" class="subject-code"></span>
+                <h2 id="m-name" style="margin: 10px 0 5px;"></h2>
+                <div style="color: #64748b; font-size: 0.9rem;" id="m-time"></div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="detail-text">
+                    <h4>อาจารย์ผู้สอน</h4>
+                    <p id="m-teacher"></p>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon"><i class="fas fa-building"></i></div>
+                <div class="detail-text">
+                    <h4>อาคาร / ห้องเรียน</h4>
+                    <p id="m-room"></p>
+                </div>
+            </div>
+
+            <div class="classmates-section">
+                <h3>เพื่อนร่วมห้อง <span class="student-count" id="m-count">0 คน</span></h3>
+                <div class="classmate-grid" id="m-classmates"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ข้อมูลจำลอง (Mock Data) ---
+        const mockFriends = [
+            { name: "สมชาย", img: "fas fa-user" },
+            { name: "วิภา", img: "fas fa-user-graduate" },
+            { name: "ก้อง", img: "fas fa-user" },
+            { name: "แพรวา", img: "fas fa-user-graduate" },
+            { name: "อาทิตย์", img: "fas fa-user" },
+            { name: "เมษา", img: "fas fa-user-graduate" },
+            { name: "เจมส์", img: "fas fa-user" }
+        ];
+
+        function getRandomClassmates(count) {
+            const shuffled = [...mockFriends].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // --- ข้อมูลตารางเรียนแบบแยกเทอม ---
+        const allScheduleData = {
+            "2/2567": { // ข้อมูลเทอมปัจจุบัน
+                "Mon": [
+                    { code: "ACC101", name: "การบัญชีเบื้องต้น 1", time: "08:30 - 10:30", teacher: "อ.สมศรี มณีเด้ง", building: "อาคาร 5", room: "502", classmates: getRandomClassmates(6) },
+                    { code: "MKT201", name: "หลักการตลาด", time: "10:30 - 12:30", teacher: "อ.ประวิทย์ คิดการใหญ่", building: "อาคาร 3", room: "305", classmates: getRandomClassmates(5) },
+                    { code: "ENG102", name: "ภาษาอังกฤษ 2", time: "13:30 - 15:30", teacher: "Teacher John", building: "อาคาร 2", room: "201", classmates: getRandomClassmates(8) }
+                ],
+                "Tue": [
+                    { code: "COM110", name: "คอมพิวเตอร์เพื่องานอาชีพ", time: "08:30 - 11:30", teacher: "อ.วิชัย ไฮเทค", building: "ศูนย์คอม", room: "LAB 1", classmates: getRandomClassmates(7) },
+                    { code: "THA101", name: "ภาษาไทยเพื่ออาชีพ", time: "12:30 - 14:30", teacher: "อ.วันเพ็ญ", building: "อาคาร 5", room: "504", classmates: getRandomClassmates(4) },
+                    { code: "SOC201", name: "มนุษย์สัมพันธ์", time: "14:30 - 16:30", teacher: "อ.จิตตรา", building: "อาคาร 4", room: "401", classmates: getRandomClassmates(6) }
+                ],
+                "Wed": [
+                    { code: "ACC102", name: "การบัญชี 2", time: "08:30 - 11:30", teacher: "อ.สมศรี มณีเด้ง", building: "อาคาร 5", room: "502", classmates: getRandomClassmates(6) },
+                    { code: "MAT101", name: "คณิตพาณิชย์", time: "12:30 - 14:30", teacher: "อ.คำนวณ", building: "อาคาร 5", room: "503", classmates: getRandomClassmates(5) },
+                    { code: "SPT100", name: "แบดมินตัน", time: "14:30 - 16:30", teacher: "อ.แข็งแรง", building: "โรงยิม", room: "Gym 1", classmates: getRandomClassmates(8) }
+                ],
+                "Thu": [
+                   { code: "LAW101", name: "กฎหมายพาณิชย์", time: "09:30 - 11:30", teacher: "อ.ยุติธรรม", building: "อาคาร 6", room: "601", classmates: getRandomClassmates(5) },
+                   { code: "ECO101", name: "เศรษฐศาสตร์จุลภาค", time: "12:30 - 14:30", teacher: "อ.มั่งคั่ง", building: "อาคาร 6", room: "602", classmates: getRandomClassmates(6) },
+                   { code: "HIS100", name: "ประวัติศาสตร์ไทย", time: "14:30 - 16:30", teacher: "อ.สยาม", building: "อาคาร 4", room: "405", classmates: getRandomClassmates(4) }
+                ],
+                "Fri": [
+                   { code: "BUS202", name: "ธุรกิจขนาดย่อม", time: "08:30 - 11:30", teacher: "อ.การค้า", building: "อาคาร 3", room: "302", classmates: getRandomClassmates(7) },
+                   { code: "SCI101", name: "วิทย์เพื่อชีวิต", time: "12:30 - 14:30", teacher: "อ.ไอน์สไตน์", building: "Lab วิทย์", room: "Lab 2", classmates: getRandomClassmates(6) },
+                   { code: "ACT101", name: "ลูกเสือวิสามัญ", time: "14:30 - 16:30", teacher: "อ.ระเบียบ", building: "ลานอเนกประสงค์", room: "ลาน 1", classmates: getRandomClassmates(10) }
+                ]
+            },
+            "1/2567": { // ข้อมูลเทอมที่แล้ว (ตัวอย่างวิชาพื้นฐาน)
+                "Mon": [
+                    { code: "GEN101", name: "ทักษะชีวิต", time: "09:00 - 12:00", teacher: "อ.ใจดี มีสุข", building: "อาคาร 1", room: "101", classmates: getRandomClassmates(10) },
+                    { code: "MAT001", name: "คณิตศาสตร์พื้นฐาน", time: "13:00 - 15:00", teacher: "อ.นับเลข", building: "อาคาร 5", room: "501", classmates: getRandomClassmates(5) }
+                ],
+                "Tue": [
+                    { code: "ENG101", name: "ภาษาอังกฤษ 1", time: "08:30 - 11:30", teacher: "Teacher Mike", building: "อาคาร 2", room: "202", classmates: getRandomClassmates(8) },
+                    { code: "ART101", name: "ศิลปะและการออกแบบ", time: "12:30 - 15:30", teacher: "อ.ศิลป์", building: "ห้องศิลปะ", room: "Art 1", classmates: getRandomClassmates(6) }
+                ],
+                "Wed": [
+                     { code: "SCI001", name: "วิทยาศาตร์พื้นฐาน", time: "09:00 - 12:00", teacher: "อ.วิทย์", building: "Lab 1", room: "L-01", classmates: getRandomClassmates(7) }
+                ],
+                "Thu": [], // ตัวอย่างวันที่ไม่มีเรียน
+                "Fri": [
+                    { code: "THA100", name: "ภาษาไทยพื้นฐาน", time: "08:30 - 10:30", teacher: "อ.วรรณคดี", building: "อาคาร 4", room: "402", classmates: getRandomClassmates(5) },
+                    { code: "SPT001", name: "สุขศึกษา", time: "13:00 - 15:00", teacher: "อ.พลานามัย", building: "อาคาร 1", room: "105", classmates: getRandomClassmates(9) }
+                ]
+            }
+        };
+
+        // --- 2. ตัวแปรจัดการ State ---
+        let currentSemester = "2/2567"; // เริ่มต้นที่เทอม 2
+        let currentDay = "Mon"; // วันเริ่มต้น
+
+        // --- 3. ฟังก์ชัน Logic ---
+
+        // เมื่อเปลี่ยน Dropdown
+        function changeSemester() {
+            const select = document.getElementById('semester-select');
+            currentSemester = select.value;
+            // เรียก render ใหม่ โดยใช้วันเดิมที่เปิดค้างอยู่
+            selectDay(currentDay); 
+        }
+
+        // เลือกวันและแสดงผล
+        function selectDay(day) {
+            currentDay = day; // จำค่าวันปัจจุบันไว้
+
+            // Update ปุ่ม Active
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            // หาปุ่มที่ตรงกับวันแล้วใส่ active (ใช้วิธีหา text ใน onclick เพราะเราส่ง string เข้ามา)
+            const buttons = document.querySelectorAll('.day-btn');
+            buttons.forEach(btn => {
+                if(btn.onclick.toString().includes(`'${day}'`)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const container = document.getElementById('schedule-container');
+            container.innerHTML = ''; 
+
+            // ดึงข้อมูลจาก เทอมปัจจุบัน -> วันปัจจุบัน
+            const semesterData = allScheduleData[currentSemester];
+            const subjects = semesterData ? semesterData[day] : []; // กัน error ถ้าไม่มีข้อมูล
+            
+            if (!subjects || subjects.length === 0) {
+                container.innerHTML = `<div class="no-class">
+                    <i class="fas fa-mug-hot" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+                    <p>วันนี้ไม่มีการเรียนการสอน</p>
+                </div>`;
+                return;
+            }
+
+            subjects.forEach((sub, index) => {
+                const card = document.createElement('div');
+                card.className = 'class-card';
+                card.onclick = () => openModal(index); // ส่งแค่ index เพราะใช้ global vars ช่วย
+
+                card.innerHTML = `
+                    <div class="class-card-header">
+                        <span class="subject-code">${sub.code}</span>
+                        <span class="subject-time"><i class="far fa-clock"></i> ${sub.time}</span>
+                    </div>
+                    <div class="subject-name">${sub.name}</div>
+                    <div class="subject-info">
+                        <span><i class="fas fa-user-tie"></i> ${sub.teacher}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // เปิด Modal
+        function openModal(index) {
+            // ดึงข้อมูลจาก Global State (currentSemester, currentDay)
+            const subject = allScheduleData[currentSemester][currentDay][index];
+            const modal = document.getElementById('class-modal');
+
+            document.getElementById('m-code').innerText = subject.code;
+            document.getElementById('m-name').innerText = subject.name;
+            document.getElementById('m-time').innerText = subject.time;
+            document.getElementById('m-teacher').innerText = subject.teacher;
+            document.getElementById('m-room').innerText = `${subject.building} (ห้อง ${subject.room})`;
+            document.getElementById('m-count').innerText = `${subject.classmates.length} คน`;
+
+            const friendsContainer = document.getElementById('m-classmates');
+            friendsContainer.innerHTML = '';
+            
+            subject.classmates.forEach(friend => {
+                friendsContainer.innerHTML += `
+                    <div class="student-item">
+                        <div class="student-avatar"><i class="${friend.img}"></i></div>
+                        <div class="student-name">${friend.name}</div>
+                    </div>
+                `;
+            });
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('class-modal').classList.remove('show');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('class-modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // โหลดครั้งแรก
+        window.onload = () => {
+            selectDay('Mon');
+        };
+
+    </script>
+</body>
+</html>
