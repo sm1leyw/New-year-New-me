@@ -71,8 +71,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         // บันทึก Session ว่าใครล็อกอินอยู่ (เผื่อใช้ในหน้าถัดไป)
         localStorage.setItem('currentUser', JSON.stringify(foundUser));
         
-        // ย้ายไปหน้า index.html
-        window.location.href = 'Shop.html';
+        window.location.href = 'home.html'; // เปลี่ยนหน้าไปยัง home.html
     } else {
         alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
     }
