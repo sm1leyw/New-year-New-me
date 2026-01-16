@@ -4,67 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - ATCC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            font-family: 'Sarabun', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .auth-container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        h2 { color: #1e40af; margin-bottom: 1.5rem; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-family: 'Sarabun';
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: 0.3s;
-        }
-        button:hover { background: #1e40af; }
-        .toggle-text {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-        .toggle-text span {
-            color: #2563eb;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .hidden { display: none; }
-        .error-msg {
-            color: #ef4444;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
@@ -74,7 +14,9 @@
             <input type="email" id="login-email" placeholder="อีเมล">
             <input type="password" id="login-pass" placeholder="รหัสผ่าน">
             <div id="login-error" class="error-msg"></div>
+            
             <button id="btn-login-submit">Login</button>
+            
             <div class="toggle-text">
                 ยังไม่มีบัญชี? <span id="btn-goto-register">สมัครสมาชิก</span>
             </div>
@@ -86,103 +28,16 @@
             <input type="password" id="reg-pass" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)">
             <input type="password" id="reg-pass-confirm" placeholder="ยืนยันรหัสผ่าน">
             <div id="reg-error" class="error-msg"></div>
+            
             <button id="btn-register-submit">สมัครสมาชิก</button>
+            
             <div class="toggle-text">
                 มีบัญชีแล้ว? <span id="btn-goto-login">เข้าสู่ระบบ</span>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        // 1. Import
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <script type="module" src="js/login.js"></script>
 
-        // 2. --- วาง Config ตรงนี้ (เช็คปีกกา { } ให้ดีนะครับ) ---
-        const firebaseConfig = {
-            // ... วางโค้ดที่ก๊อปมาจาก Firebase Console ตรงนี้ ...
-            // ตัวอย่าง:
-            // apiKey: "AIzaSyDxxxx...",
-            // authDomain: "xxxx...",
-            // ...
-        };
-
-        // 3. เริ่มต้นระบบ
-        // ถ้า Config ผิด บรรทัดนี้จะ Error ใน Console (กด F12 ดูได้)
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // --- ฟังก์ชันทำงาน ---
-
-        // ฟังก์ชันสมัครสมาชิก
-        async function doRegister() {
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            const confirmPass = document.getElementById('reg-pass-confirm').value;
-            const errorDiv = document.getElementById('reg-error');
-
-            // รีเซ็ต Error เดิม
-            errorDiv.style.display = 'none';
-
-            if (pass !== confirmPass) {
-                errorDiv.innerText = "รหัสผ่านไม่ตรงกัน";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                alert("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ " + userCredential.user.email);
-                window.location.href = 'index.html'; 
-            } catch (error) {
-                console.error(error); // แสดง error เต็มๆ ใน console
-                let msg = "เกิดข้อผิดพลาด: " + error.message;
-                if (error.code === 'auth/email-already-in-use') msg = "อีเมลนี้มีผู้ใช้งานแล้ว";
-                if (error.code === 'auth/weak-password') msg = "รหัสผ่านต้องมีความยาว 6 ตัวขึ้นไป";
-                
-                errorDiv.innerText = msg;
-                errorDiv.style.display = 'block';
-            }
-        }
-
-        // ฟังก์ชันล็อกอิน
-        async function doLogin() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            const errorDiv = document.getElementById('login-error');
-
-            // รีเซ็ต Error เดิม
-            errorDiv.style.display = 'none';
-
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                alert("ล็อกอินสำเร็จ!");
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error(error);
-                let msg = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-                errorDiv.innerText = msg;
-                errorDiv.style.display = 'block';
-            }
-        }
-
-        // ฟังก์ชันสลับหน้า
-        function toggleForm() {
-            document.getElementById('login-form').classList.toggle('hidden');
-            document.getElementById('register-form').classList.toggle('hidden');
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('reg-error').style.display = 'none';
-        }
-
-        // --- เชื่อมปุ่มกับฟังก์ชัน (Event Listeners) ---
-        // วิธีนี้ปลอดภัยกว่า onclick="..." ใน HTML
-        document.getElementById('btn-login-submit').addEventListener('click', doLogin);
-        document.getElementById('btn-register-submit').addEventListener('click', doRegister);
-        
-        document.getElementById('btn-goto-register').addEventListener('click', toggleForm);
-        document.getElementById('btn-goto-login').addEventListener('click', toggleForm);
-
-    </script>
 </body>
 </html>
