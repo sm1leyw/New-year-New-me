@@ -73,7 +73,7 @@ async function doLogin() {
     try {
         await signInWithEmailAndPassword(auth, email, pass);
         alert("🎉 ล็อกอินสำเร็จ!");
-        window.location.href = 'index.html'; // ไปหน้าหลัก
+        window.location.href = 'home.html'; // ไปหน้าหลัก
     } catch (error) {
         console.error("Login Error:", error);
         let msg = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
