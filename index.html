@@ -74,9 +74,9 @@
             <input type="email" id="login-email" placeholder="อีเมล">
             <input type="password" id="login-pass" placeholder="รหัสผ่าน">
             <div id="login-error" class="error-msg"></div>
-            <button onclick="doLogin()">Login</button>
+            <button id="btn-login-submit">Login</button>
             <div class="toggle-text">
-                ยังไม่มีบัญชี? <span onclick="toggleForm()">สมัครสมาชิก</span>
+                ยังไม่มีบัญชี? <span id="btn-goto-register">สมัครสมาชิก</span>
             </div>
         </div>
 
@@ -86,52 +86,34 @@
             <input type="password" id="reg-pass" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)">
             <input type="password" id="reg-pass-confirm" placeholder="ยืนยันรหัสผ่าน">
             <div id="reg-error" class="error-msg"></div>
-            <button onclick="doRegister()">สมัครสมาชิก</button>
+            <button id="btn-register-submit">สมัครสมาชิก</button>
             <div class="toggle-text">
-                มีบัญชีแล้ว? <span onclick="toggleForm()">เข้าสู่ระบบ</span>
+                มีบัญชีแล้ว? <span id="btn-goto-login">เข้าสู่ระบบ</span>
             </div>
         </div>
     </div>
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    <script type="module">
+        // 1. Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBV-5X4UiXmkuioRm_f2OE1YkUXMJCrmCY",
-    authDomain: "atcc-by-aom.firebaseapp.com",
-    databaseURL: "https://atcc-by-aom-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "atcc-by-aom",
-    storageBucket: "atcc-by-aom.firebasestorage.app",
-    messagingSenderId: "94600131999",
-    appId: "1:94600131999:web:70b821d82bd506196779aa",
-    measurementId: "G-K7CRRH6GL9"
-  };
+        // 2. --- วาง Config ตรงนี้ (เช็คปีกกา { } ให้ดีนะครับ) ---
+        const firebaseConfig = {
+            // ... วางโค้ดที่ก๊อปมาจาก Firebase Console ตรงนี้ ...
+            // ตัวอย่าง:
+            // apiKey: "AIzaSyDxxxx...",
+            // authDomain: "xxxx...",
+            // ...
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+        // 3. เริ่มต้นระบบ
+        // ถ้า Config ผิด บรรทัดนี้จะ Error ใน Console (กด F12 ดูได้)
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-    <script>
-        // --- Logic การทำงาน ---
-
-        // สลับหน้า Login / Register
-        function toggleForm() {
-            document.getElementById('login-form').classList.toggle('hidden');
-            document.getElementById('register-form').classList.toggle('hidden');
-            clearErrors();
-        }
-
-        function clearErrors() {
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('reg-error').style.display = 'none';
-        }
+        // --- ฟังก์ชันทำงาน ---
 
         // ฟังก์ชันสมัครสมาชิก
         async function doRegister() {
@@ -140,6 +122,9 @@
             const confirmPass = document.getElementById('reg-pass-confirm').value;
             const errorDiv = document.getElementById('reg-error');
 
+            // รีเซ็ต Error เดิม
+            errorDiv.style.display = 'none';
+
             if (pass !== confirmPass) {
                 errorDiv.innerText = "รหัสผ่านไม่ตรงกัน";
                 errorDiv.style.display = 'block';
@@ -147,13 +132,16 @@
             }
 
             try {
-                // เรียกใช้ Firebase Register
-                const userCredential = await window.createUserWithEmailAndPassword(window.auth, email, pass);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 alert("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ " + userCredential.user.email);
-                // สมัครเสร็จแล้วให้ไปหน้าหลัก (แก้ชื่อไฟล์ปลายทางได้)
                 window.location.href = 'index.html'; 
             } catch (error) {
-                errorDiv.innerText = "เกิดข้อผิดพลาด: " + error.message;
+                console.error(error); // แสดง error เต็มๆ ใน console
+                let msg = "เกิดข้อผิดพลาด: " + error.message;
+                if (error.code === 'auth/email-already-in-use') msg = "อีเมลนี้มีผู้ใช้งานแล้ว";
+                if (error.code === 'auth/weak-password') msg = "รหัสผ่านต้องมีความยาว 6 ตัวขึ้นไป";
+                
+                errorDiv.innerText = msg;
                 errorDiv.style.display = 'block';
             }
         }
@@ -164,21 +152,37 @@
             const pass = document.getElementById('login-pass').value;
             const errorDiv = document.getElementById('login-error');
 
+            // รีเซ็ต Error เดิม
+            errorDiv.style.display = 'none';
+
             try {
-                // เรียกใช้ Firebase Login
-                const userCredential = await window.signInWithEmailAndPassword(window.auth, email, pass);
+                await signInWithEmailAndPassword(auth, email, pass);
                 alert("ล็อกอินสำเร็จ!");
-                // ล็อกอินเสร็จแล้วให้ไปหน้าหลัก
                 window.location.href = 'index.html';
             } catch (error) {
+                console.error(error);
                 let msg = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-                if (error.code === 'auth/too-many-requests') msg = "ลองใหม่อีกครั้งในภายหลัง";
                 errorDiv.innerText = msg;
                 errorDiv.style.display = 'block';
-                console.error(error);
             }
         }
-    </script>
 
+        // ฟังก์ชันสลับหน้า
+        function toggleForm() {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('register-form').classList.toggle('hidden');
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('reg-error').style.display = 'none';
+        }
+
+        // --- เชื่อมปุ่มกับฟังก์ชัน (Event Listeners) ---
+        // วิธีนี้ปลอดภัยกว่า onclick="..." ใน HTML
+        document.getElementById('btn-login-submit').addEventListener('click', doLogin);
+        document.getElementById('btn-register-submit').addEventListener('click', doRegister);
+        
+        document.getElementById('btn-goto-register').addEventListener('click', toggleForm);
+        document.getElementById('btn-goto-login').addEventListener('click', toggleForm);
+
+    </script>
 </body>
 </html>
