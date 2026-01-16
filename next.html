@@ -96,27 +96,7 @@
             z-index: 3; /* อยู่ชั้นบนสุด */
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* เพิ่มเงาให้ตัวหนังสืออ่านง่ายขึ้นบนวิดีโอ */
         }
-
-        /* --- Elements ตกแต่งเดิม (Bubble/Icon) --- */
-        /* ปรับ z-index ให้อยู่ระหว่าง overlay กับข้อความ */
-        .floating-icon {
-            position: absolute;
-            font-size: 5rem;
-            color: rgba(255, 255, 255, 0.3); /* เพิ่มความชัดขึ้นนิดหน่อย */
-            bottom: -10px;
-            right: 20px;
-            animation: float 4s ease-in-out infinite;
-            z-index: 2;
-        }
-
-        .bubble {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            animation: moveUp 10s linear infinite;
-            z-index: 2;
-        }
-
+        
         /* --- Animations เดิม --- */
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
